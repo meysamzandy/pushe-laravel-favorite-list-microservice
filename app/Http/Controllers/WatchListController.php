@@ -7,79 +7,24 @@ use Illuminate\Http\Request;
 
 class WatchListController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    public function getList($uuid = null)
     {
-        //
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+
+
+    public function addWatch(request $request)
     {
-        //
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function removeWatch(request $request)
     {
-        //
+
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\WatchList  $watchList
-     * @return \Illuminate\Http\Response
-     */
-    public function show(WatchList $watchList)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\WatchList  $watchList
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(WatchList $watchList)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\WatchList  $watchList
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, WatchList $watchList)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\WatchList  $watchList
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(WatchList $watchList)
-    {
-        //
-    }
 }

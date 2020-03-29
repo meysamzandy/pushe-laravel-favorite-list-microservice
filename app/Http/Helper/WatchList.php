@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 class WatchList
 {
     public const SHA_256 = 'sha256';
-    public const CAST_5_CFB = 'cast5-cfb';
+    const CAST_5_CFB = 'cast5-cfb';
 
     /**
      * @param $string

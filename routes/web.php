@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('_api/_v1/watch')->group(static function () {
-    Route::get('/list', 'WatchListController@getList');
+    Route::get('/{uuid}', 'WatchListController@getList');
     Route::post('/add', 'WatchListController@addWatch');
     Route::post('/remove', 'WatchListController@removeWatch');
 });

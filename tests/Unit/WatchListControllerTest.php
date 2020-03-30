@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Http\Controllers;
+namespace Tests\Unit;
 
 use App\Http\Controllers\WatchListController;
 use App\Http\Helper\WatchList;
@@ -10,7 +10,6 @@ use Tests\TestCase;
 
 class WatchListControllerTest extends TestCase
 {
-    public const WATCH = '_api/_v1/watch';
     public $fetchData;
     public function setUp(): void
 
@@ -37,15 +36,8 @@ class WatchListControllerTest extends TestCase
 
     }
 
-    public function testAddWatch()
-    {
 
-    }
 
-    public function testIfUuidIsValid()
-    {
-
-    }
 
     public function testGetList(): void
     {
@@ -87,18 +79,6 @@ class WatchListControllerTest extends TestCase
         $this->assertEquals(200, $testOne->getStatusCode());
         $this->assertJsonStringEqualsJsonString('{"body":{"list":["'.$this->fetchData->nid.'"]},"message":null}', $testOne->getContent());
 
-
     }
 
-
-
-    public function testIfSecretIsValid()
-    {
-
-    }
-
-    public function testRemoveWatch()
-    {
-
-    }
 }

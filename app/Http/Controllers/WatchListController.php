@@ -34,57 +34,6 @@ class WatchListController extends Controller
     }
 
     /**
-     * @param string $uuid
-     * @return Builder[]|Collection|Mixed_
-     */
-    public static function fetchWatchListQuery(string $uuid)
-    {
-        return \App\WatchList::query()->where('uuid', $uuid)->get('nid') ?: null;
-    }
-
-    public function addWatch(request $request)
-    {
-
-    }
-
-    public function removeWatch(request $request)
-    {
-
-    }
-
-    /**
-     * @param $watchList
-     */
-    public function ifWatchListHasItem($watchList): void
-    {
-        if ($watchList !== []) {
-            $data = null;
-            foreach ($watchList as $value) {
-                $data [] = $value->nid;
-            }
-            $this->body['list'] = $data;
-            $this->statusCode = 200;
-            $this->statusMessage = 'OK';
-        }
-    }
-
-    /**
-     * @param $secret
-     * @param bool $secretValidator
-     * @param string $uuid
-     */
-    public function ifUuidIsValid($secret, bool $secretValidator, string $uuid): void
-    {
-        if (empty($secret) || ($secretValidator && WatchListValidators::uuidValidator($uuid))) {
-
-            $watchList = self::fetchWatchListQuery($uuid);
-            $this->statusCode = 404;
-            $this->statusMessage = 'Not Found';
-            $this->ifWatchListHasItem($watchList);
-        }
-    }
-
-    /**
      * @param $secret
      * @param bool $secretValidator
      */
@@ -99,6 +48,59 @@ class WatchListController extends Controller
 
 
         }
+    }
+
+    /**
+     * @param $secret
+     * @param bool $secretValidator
+     * @param string $uuid
+     */
+    public function ifUuidIsValid($secret, bool $secretValidator, string $uuid): void
+    {
+        if ($secretValidator && WatchListValidators::uuidValidator($uuid)) {
+            $this->statusCode = 404;
+            $this->statusMessage = 'Not Found';
+
+            $watchList = self::fetchWatchListQuery($uuid);
+
+            $this->ifWatchListHasItem($watchList);
+
+        }
+    }
+
+    /**
+     * @param string $uuid
+     * @return Builder[]|Collection|Mixed_
+     */
+    public static function fetchWatchListQuery(string $uuid)
+    {
+        return \App\WatchList::query()->where('uuid', $uuid)->get('nid');
+    }
+
+    /**
+     * @param $watchList
+     */
+    public function ifWatchListHasItem($watchList): void
+    {
+        if (count($watchList) !== 0) {
+            $data = null;
+            foreach ($watchList as $value) {
+                $data [] = $value->nid;
+            }
+            $this->body['list'] = $data;
+            $this->statusCode = 200;
+            $this->statusMessage = 'OK';
+        }
+    }
+
+    public function addWatch(request $request)
+    {
+
+    }
+
+    public function removeWatch(request $request)
+    {
+
     }
 
 

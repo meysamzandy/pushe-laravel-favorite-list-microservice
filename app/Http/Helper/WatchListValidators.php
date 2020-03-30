@@ -27,19 +27,19 @@ class WatchListValidators
      */
     public static function uuidValidator($uuid): bool
     {
-        $validator = Validator::make($uuid,
+        $validator = Validator::make(['uuid' =>$uuid],
             ['uuid' => 'uuid']
         );
         return !$validator->fails();
     }
 
     /**
-     * @param Request $request
+     * @param $secret
      * @return bool
      */
-    public static function secretValidator(request $request): bool
+    public static function secretValidator($secret): bool
     {
-        $validator = Validator::make($request->all(),
+        $validator = Validator::make(['u' => $secret],
             ['u' => 'required|min:64']
         );
         return !$validator->fails();

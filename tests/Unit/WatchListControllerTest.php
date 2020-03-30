@@ -60,7 +60,6 @@ class WatchListControllerTest extends TestCase
 
         //uuid notfound in db
         $encrypt = WatchList::encrypt('f0483750-665f-43c9-b2ca-24e7d26f4049', env('DECRYPT_KEY'), env('DECRYPT_IV'));
-        $decrypt = WatchList::decrypt('MTYwUFQzbFNtMTZFQnpQL2RyZkpOeHNNTVZKYzZoaisrNVVIdmFuclRZcEJDKzNC', env('DECRYPT_KEY'), env('DECRYPT_IV'));
 
         $testOne = (new WatchListController)->getList($encrypt);
         $this->assertNotEmpty($testOne->getContent());
@@ -71,7 +70,6 @@ class WatchListControllerTest extends TestCase
 
         //uuid has value in db
         $encrypt = WatchList::encrypt($this->fetchData->uuid, env('DECRYPT_KEY'), env('DECRYPT_IV'));
-        $decrypt = WatchList::decrypt('MTYwUFQzbFNtMTZFQnpQL2RyZkpOeHNNTVZKYzZoaisrNVVIdmFuclRZcEJDKzNC', env('DECRYPT_KEY'), env('DECRYPT_IV'));
 
         $testOne = (new WatchListController)->getList($encrypt);
         $this->assertNotEmpty($testOne->getContent());

@@ -16,7 +16,7 @@ class CreateWatchListsTable extends Migration
         Schema::create('watch_lists', static function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned()->autoIncrement()->unique();
             $table->uuid('uuid')->comment('store uuid of users in ghatreh');
-            $table->integer('nid')->unsigned()->comment('store nid of products');
+            $table->bigInteger('nid')->unsigned()->comment('store nid of products');
             $table->timestamps();
             $table->index('id');
             $table->index('uuid');

@@ -76,7 +76,6 @@ class WatchListController extends Controller
     {
         return \App\WatchList::query()->where('uuid', $uuid)->get('nid');
     }
-
     /**
      * @param $watchList
      */

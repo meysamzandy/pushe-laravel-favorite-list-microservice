@@ -21,6 +21,10 @@ class WatchListController extends Controller
         $statusCode = 400,
         $statusMessage = 'Bad Request';
 
+    /**
+     * @param null $secret
+     * @return JsonResponse
+     */
     public function getList($secret = null): JsonResponse
     {
         $this->statusCode = 403;
@@ -92,11 +96,15 @@ class WatchListController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function addWatch(request $request): JsonResponse
     {
         $Validator = WatchListValidators::nidUuidValidator($request);
 
-        $this->ifValidate($request, $Validator);
+        $this->ifValidateToAdd($request, $Validator);
 
         return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
     }
@@ -105,7 +113,7 @@ class WatchListController extends Controller
      * @param Request $request
      * @param bool $Validator
      */
-    public function ifValidate(request $request, bool $Validator): void
+    public function ifValidateToAdd(request $request, bool $Validator): void
     {
         if ($Validator) {
 
@@ -120,7 +128,7 @@ class WatchListController extends Controller
 
             $ifNidAndUuidExist = $this->getObj($nid, $uuid);
 
-            $this->ifUserIsLoggedIn($uuid, $ifNidAndUuidExist, $nid);
+            $this->ifUserIsLoggedInToAdd($uuid, $ifNidAndUuidExist, $nid);
 
         }
     }
@@ -140,13 +148,13 @@ class WatchListController extends Controller
      * @param $ifNidAndUuidExist
      * @param $nid
      */
-    public function ifUserIsLoggedIn(string $uuid, $ifNidAndUuidExist, $nid): void
+    public function ifUserIsLoggedInToAdd(string $uuid, $ifNidAndUuidExist, $nid): void
     {
         if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
             $this->statusCode = 403;
             $this->statusMessage = 'Forbidden';
             $this->message = __('dict.nidAndUuidExist');
-            $this->ifNidAndUuidExist($ifNidAndUuidExist, $uuid, $nid);
+            $this->ifNidAndUuidExistToAdd($ifNidAndUuidExist, $uuid, $nid);
         }
     }
 
@@ -155,7 +163,7 @@ class WatchListController extends Controller
      * @param string $uuid
      * @param $nid
      */
-    public function ifNidAndUuidExist($ifNidAndUuidExist, string $uuid, $nid): void
+    public function ifNidAndUuidExistToAdd($ifNidAndUuidExist, string $uuid, $nid): void
     {
         if (!$ifNidAndUuidExist) {
             $this->statusCode = 403;
@@ -185,9 +193,81 @@ class WatchListController extends Controller
         }
     }
 
-    public function removeWatch(request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function removeWatch(request $request): JsonResponse
     {
+        $Validator = WatchListValidators::nidUuidValidator($request);
 
+        $this->ifValidateToRemove($request, $Validator);
+
+        return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
+    }
+
+    /**
+     * @param $nid
+     * @param string $uuid
+     * @return mixed
+     */
+    public function removeFromWatchList($nid, string $uuid)
+    {
+        return \App\WatchList::query()->where('nid', $nid)->where('uuid', $uuid)->delete();
+    }
+
+    /**
+     * @param $ifNidAndUuidExist
+     * @param $nid
+     * @param string $uuid
+     */
+    public function ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, string $uuid): void
+    {
+        if ($ifNidAndUuidExist) {
+            $this->statusCode = 200;
+            $this->statusMessage = 'OK';
+            $this->message = __('dict.deleted');
+            $this->removeFromWatchList($nid, $uuid);
+        }
+    }
+
+    /**
+     * @param string $uuid
+     * @param $ifNidAndUuidExist
+     * @param $nid
+     */
+    public function ifUserIsLoggedInToRemove(string $uuid, $ifNidAndUuidExist, $nid): void
+    {
+        if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
+            $this->statusCode = 404;
+            $this->statusMessage = 'Not Found';
+            $this->message = __('dict.nidAndUuidNotExist');
+            $this->ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, $uuid);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param bool $Validator
+     */
+    public function ifValidateToRemove(request $request, bool $Validator): void
+    {
+        if ($Validator) {
+
+            $this->statusCode = 403;
+            $this->statusMessage = 'Forbidden';
+            $this->message = __('dict.notLogging');
+
+            $secret = $request->input('u');
+            $nid = $request->input('n');
+
+            $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
+
+            $ifNidAndUuidExist = $this->getObj($nid, $uuid);
+
+            $this->ifUserIsLoggedInToRemove($uuid, $ifNidAndUuidExist, $nid);
+
+        }
     }
 
 

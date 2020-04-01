@@ -157,7 +157,7 @@ class WatchListControllerTest extends TestCase
 
 
 
-        // check if there is data in body and valid
+        // data is in body and valid
         $data = '{"n":"757575","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNUFHb2FDalpRcUJ0c2Fo"}';
 
 
@@ -186,6 +186,117 @@ class WatchListControllerTest extends TestCase
 
 
 
+    }
+
+    public function testRemoveWatch(): void
+    {
+        // check if there is no data in body
+        $request = new Request([], $_POST, [], [], [], []);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 400);
+
+        // check if there is data in body but no value
+        $data = '{"n":"","u":""}';
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 400);
+
+
+        // check if there is data in body but nid is not valid
+
+        $data = '{"n":"0e0","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNUFHb2FDalpRcUJ0c2Fo"}';
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 400);
+
+
+        // check if if user is anonymous
+        $data = '{"n":"757575","u":"OEluZnpRVWp4U1FyRE1Sb1IvYnA1RkVqYnc4SmNyRWp6WENYVk5MNzRycjdQRkVD"}';
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 403);
+
+
+
+        // check if if uuid is invalid
+        $data = '{"n":"757575","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNtFHb2FDalpRcUJ0c2Fo"}';
+
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 403);
+
+
+
+        // check if if uuid is invalid
+        $data = '{"n":"757575","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNtFHb2FDalpRcUJ0c2F"}';
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 400);
+
+
+
+        // check if there is data in body and valid but not exist in db
+
+        $data = '{"n":"757575","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNUFHb2FDalpRcUJ0c2Fo"}';
+
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 404);
+
+
+
+        // add in db
+        $data = '{"n":"757575","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNUFHb2FDalpRcUJ0c2Fo"}';
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+        $WatchListController = new WatchListController();
+        $WatchListController->addWatch($request);
+
+        //remove from db
+        $data = '{"n":"757575","u":"Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNUFHb2FDalpRcUJ0c2Fo"}';
+        $request = new Request([], $_POST, [], [], [], [], $data);
+        $request->headers->set('Content-Type', 'application/json');
+
+        $WatchListController = new WatchListController();
+        $removeWatch = $WatchListController->removeWatch($request);
+
+        $this->assertJson($removeWatch->getContent());
+        $this->assertEquals($removeWatch->getStatusCode(), 200);
     }
 
 }

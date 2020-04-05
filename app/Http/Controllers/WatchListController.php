@@ -59,8 +59,7 @@ class WatchListController extends Controller
     public function ifUuidIsValid(bool $secretValidator, string $uuid): void
     {
         if ($secretValidator && WatchListValidators::uuidValidator($uuid)) {
-            $this->statusCode = 404;
-            $this->statusMessage = 'Not Found';
+            $this->setNotFoundStatus();
 
             $watchList = self::fetchWatchListQuery($uuid);
 
@@ -233,8 +232,7 @@ class WatchListController extends Controller
     public function ifUserIsLoggedInToRemove(string $uuid, $ifNidAndUuidExist, $nid): void
     {
         if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
-            $this->statusCode = 404;
-            $this->statusMessage = 'Not Found';
+            $this->setNotFoundStatus();
             $this->message = __('dict.nidAndUuidNotExist');
             $this->ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, $uuid);
         }
@@ -280,12 +278,21 @@ class WatchListController extends Controller
     }
 
     /**
-     * set Forbidden Status
+     * set Forbidden Status.
      */
     protected function setForbiddenStatus(): void
     {
         $this->setStatusCode(403);
         $this->setStatusMessage('Forbidden');
+    }
+
+    /**
+     * set Not Found Status.
+     */
+    protected function setNotFoundStatus(): void
+    {
+        $this->setStatusCode(404);
+        $this->setStatusMessage('Not Found');
     }
 
 

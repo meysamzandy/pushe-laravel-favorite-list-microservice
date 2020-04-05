@@ -5,12 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Helper\Queries;
 use App\Http\Helper\WatchList;
 use App\Http\Helper\WatchListValidators;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use phpDocumentor\Reflection\Types\Mixed_;
 
 class WatchListController extends Controller
 {
@@ -21,6 +17,7 @@ class WatchListController extends Controller
         $message = NULL,
         $statusCode = 400,
         $statusMessage = 'Bad Request';
+
     /**
      * @param null $secret
      * @return JsonResponse
@@ -38,6 +35,31 @@ class WatchListController extends Controller
     }
 
     /**
+     * set Forbidden Status.
+     */
+    protected function setForbiddenStatus(): void
+    {
+        $this->setStatusCode(403);
+        $this->setStatusMessage('Forbidden');
+    }
+
+    /**
+     * @param int $statusCode
+     */
+    public function setStatusCode(int $statusCode): void
+    {
+        $this->statusCode = $statusCode;
+    }
+
+    /**
+     * @param string $statusMessage
+     */
+    public function setStatusMessage(string $statusMessage): void
+    {
+        $this->statusMessage = $statusMessage;
+    }
+
+    /**
      * @param $secret
      * @param bool $secretValidator
      */
@@ -47,7 +69,7 @@ class WatchListController extends Controller
             $this->setForbiddenStatus();
 
             $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
-            $this->ifUuidIsValid( $secretValidator, $uuid);
+            $this->ifUuidIsValid($secretValidator, $uuid);
 
 
         }
@@ -69,6 +91,14 @@ class WatchListController extends Controller
         }
     }
 
+    /**
+     * set Not Found Status.
+     */
+    protected function setNotFoundStatus(): void
+    {
+        $this->setStatusCode(404);
+        $this->setStatusMessage('Not Found');
+    }
 
     /**
      * @param $watchList
@@ -83,6 +113,15 @@ class WatchListController extends Controller
             $this->body['list'] = $data;
             $this->setOkStatus();
         }
+    }
+
+    /**
+     * set Ok Status.
+     */
+    protected function setOkStatus(): void
+    {
+        $this->setStatusCode(200);
+        $this->setStatusMessage('OK');
     }
 
     /**
@@ -107,7 +146,7 @@ class WatchListController extends Controller
         if ($Validator) {
 
             $this->setForbiddenStatus();
-            $this->setMessage(__('dict.notLogging')) ;
+            $this->setMessage(__('dict.notLogging'));
 
             $secret = $request->input('u');
             $nid = $request->input('n');
@@ -121,7 +160,13 @@ class WatchListController extends Controller
         }
     }
 
-
+    /**
+     * @param null $message
+     */
+    public function setMessage($message): void
+    {
+        $this->message = $message;
+    }
 
     /**
      * @param string $uuid
@@ -171,6 +216,15 @@ class WatchListController extends Controller
     }
 
     /**
+     * set Created Status.
+     */
+    protected function setCreatedStatus(): void
+    {
+        $this->setStatusCode(201);
+        $this->setStatusMessage('Created');
+    }
+
+    /**
      * @param Request $request
      * @return JsonResponse
      */
@@ -181,36 +235,6 @@ class WatchListController extends Controller
         $this->ifValidateToRemove($request, $Validator);
 
         return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
-    }
-
-
-
-    /**
-     * @param $ifNidAndUuidExist
-     * @param $nid
-     * @param string $uuid
-     */
-    public function ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, string $uuid): void
-    {
-        if ($ifNidAndUuidExist) {
-            $this->setOkStatus();
-            $this->setMessage(__('dict.deleted'));
-            Queries::removeFromWatchList($nid, $uuid);
-        }
-    }
-
-    /**
-     * @param string $uuid
-     * @param $ifNidAndUuidExist
-     * @param $nid
-     */
-    public function ifUserIsLoggedInToRemove(string $uuid, $ifNidAndUuidExist, $nid): void
-    {
-        if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
-            $this->setNotFoundStatus();
-            $this->setMessage(__('dict.nidAndUuidNotExist'));
-            $this->ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, $uuid);
-        }
     }
 
     /**
@@ -237,63 +261,31 @@ class WatchListController extends Controller
     }
 
     /**
-     * @param string $statusMessage
+     * @param string $uuid
+     * @param $ifNidAndUuidExist
+     * @param $nid
      */
-    public function setStatusMessage(string $statusMessage): void
+    public function ifUserIsLoggedInToRemove(string $uuid, $ifNidAndUuidExist, $nid): void
     {
-        $this->statusMessage = $statusMessage;
+        if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
+            $this->setNotFoundStatus();
+            $this->setMessage(__('dict.nidAndUuidNotExist'));
+            $this->ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, $uuid);
+        }
     }
 
     /**
-     * @param int $statusCode
+     * @param $ifNidAndUuidExist
+     * @param $nid
+     * @param string $uuid
      */
-    public function setStatusCode(int $statusCode): void
+    public function ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, string $uuid): void
     {
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * set Forbidden Status.
-     */
-    protected function setForbiddenStatus(): void
-    {
-        $this->setStatusCode(403);
-        $this->setStatusMessage('Forbidden');
-    }
-
-    /**
-     * set Not Found Status.
-     */
-    protected function setNotFoundStatus(): void
-    {
-        $this->setStatusCode(404);
-        $this->setStatusMessage('Not Found');
-    }
-
-    /**
-     * set Ok Status.
-     */
-    protected function setOkStatus(): void
-    {
-        $this->setStatusCode(200);
-        $this->setStatusMessage('OK');
-    }
-
-    /**
-     * set Created Status.
-     */
-    protected function setCreatedStatus(): void
-    {
-        $this->setStatusCode(201);
-        $this->setStatusMessage('Created');
-    }
-
-    /**
-     * @param null $message
-     */
-    public function setMessage($message): void
-    {
-        $this->message = $message;
+        if ($ifNidAndUuidExist) {
+            $this->setOkStatus();
+            $this->setMessage(__('dict.deleted'));
+            Queries::removeFromWatchList($nid, $uuid);
+        }
     }
 
 

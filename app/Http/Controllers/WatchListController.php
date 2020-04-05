@@ -113,7 +113,7 @@ class WatchListController extends Controller
         if ($Validator) {
 
             $this->setForbiddenStatus();
-            $this->message = __('dict.notLogging');
+            $this->setMessage(__('dict.notLogging')) ;
 
             $secret = $request->input('u');
             $nid = $request->input('n');
@@ -146,7 +146,7 @@ class WatchListController extends Controller
     {
         if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
             $this->setForbiddenStatus();
-            $this->message = __('dict.nidAndUuidExist');
+            $this->setMessage(__('dict.nidAndUuidExist'));
             $this->ifNidAndUuidExistToAdd($ifNidAndUuidExist, $uuid, $nid);
         }
     }
@@ -160,7 +160,7 @@ class WatchListController extends Controller
     {
         if (!$ifNidAndUuidExist) {
             $this->setForbiddenStatus();
-            $this->message = __('dict.toManyRequest');
+            $this->setMessage(__('dict.toManyRequest'));
             $watchList = self::fetchWatchListQuery($uuid);
             $this->addToWatchlistQuery($watchList, $nid, $uuid);
         }
@@ -175,7 +175,7 @@ class WatchListController extends Controller
     {
         if (count($watchList) < 30) {
             $this->setCreatedStatus();
-            $this->message = __('dict.created');
+            $this->setMessage(__('dict.created'));
             $reActions = new \App\WatchList();
             $reActions->nid = $nid;
             $reActions->uuid = $uuid;
@@ -216,7 +216,7 @@ class WatchListController extends Controller
     {
         if ($ifNidAndUuidExist) {
             $this->setOkStatus();
-            $this->message = __('dict.deleted');
+            $this->setMessage(__('dict.deleted'));
             $this->removeFromWatchList($nid, $uuid);
         }
     }
@@ -230,7 +230,7 @@ class WatchListController extends Controller
     {
         if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
             $this->setNotFoundStatus();
-            $this->message = __('dict.nidAndUuidNotExist');
+            $this->setMessage(__('dict.nidAndUuidNotExist'));
             $this->ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, $uuid);
         }
     }
@@ -244,7 +244,7 @@ class WatchListController extends Controller
         if ($Validator) {
 
             $this->setForbiddenStatus();
-            $this->message = __('dict.notLogging');
+            $this->setMessage(__('dict.notLogging'));
 
             $secret = $request->input('u');
             $nid = $request->input('n');
@@ -308,6 +308,14 @@ class WatchListController extends Controller
     {
         $this->setStatusCode(201);
         $this->setStatusMessage('Created');
+    }
+
+    /**
+     * @param null $message
+     */
+    public function setMessage($message): void
+    {
+        $this->message = $message;
     }
 
 

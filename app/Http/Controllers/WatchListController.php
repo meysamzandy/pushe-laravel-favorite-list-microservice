@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helper\Queries;
 use App\Http\Helper\WatchList;
 use App\Http\Helper\WatchListValidators;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,21 +62,14 @@ class WatchListController extends Controller
         if ($secretValidator && WatchListValidators::uuidValidator($uuid)) {
             $this->setNotFoundStatus();
 
-            $watchList = self::fetchWatchListQuery($uuid);
+            $watchList = Queries::fetchWatchListQuery($uuid);
 
             $this->ifWatchListHasItem($watchList);
 
         }
     }
 
-    /**
-     * @param string $uuid
-     * @return Builder[]|Collection|Mixed_
-     */
-    public static function fetchWatchListQuery(string $uuid)
-    {
-        return \App\WatchList::query()->where('uuid', $uuid)->get('nid');
-    }
+
     /**
      * @param $watchList
      */
@@ -120,22 +114,14 @@ class WatchListController extends Controller
 
             $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
 
-            $ifNidAndUuidExist = $this->getObj($nid, $uuid);
+            $ifNidAndUuidExist = Queries::getObj($nid, $uuid);
 
             $this->ifUserIsLoggedInToAdd($uuid, $ifNidAndUuidExist, $nid);
 
         }
     }
 
-    /**
-     * @param $nid
-     * @param string $uuid
-     * @return Builder|Model|object|null
-     */
-    public function getObj($nid, string $uuid)
-    {
-        return \App\WatchList::query()->where('nid', $nid)->where('uuid', $uuid)->first();
-    }
+
 
     /**
      * @param string $uuid
@@ -161,7 +147,7 @@ class WatchListController extends Controller
         if (!$ifNidAndUuidExist) {
             $this->setForbiddenStatus();
             $this->setMessage(__('dict.toManyRequest'));
-            $watchList = self::fetchWatchListQuery($uuid);
+            $watchList = Queries::fetchWatchListQuery($uuid);
             $this->addToWatchlistQuery($watchList, $nid, $uuid);
         }
     }
@@ -197,15 +183,7 @@ class WatchListController extends Controller
         return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
     }
 
-    /**
-     * @param $nid
-     * @param string $uuid
-     * @return mixed
-     */
-    public function removeFromWatchList($nid, string $uuid)
-    {
-        return \App\WatchList::query()->where('nid', $nid)->where('uuid', $uuid)->delete();
-    }
+
 
     /**
      * @param $ifNidAndUuidExist
@@ -217,7 +195,7 @@ class WatchListController extends Controller
         if ($ifNidAndUuidExist) {
             $this->setOkStatus();
             $this->setMessage(__('dict.deleted'));
-            $this->removeFromWatchList($nid, $uuid);
+            Queries::removeFromWatchList($nid, $uuid);
         }
     }
 
@@ -251,7 +229,7 @@ class WatchListController extends Controller
 
             $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
 
-            $ifNidAndUuidExist = $this->getObj($nid, $uuid);
+            $ifNidAndUuidExist = Queries::getObj($nid, $uuid);
 
             $this->ifUserIsLoggedInToRemove($uuid, $ifNidAndUuidExist, $nid);
 

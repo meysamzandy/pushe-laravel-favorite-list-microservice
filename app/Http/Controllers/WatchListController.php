@@ -87,8 +87,7 @@ class WatchListController extends Controller
                 $data [] = $value->nid;
             }
             $this->body['list'] = $data;
-            $this->statusCode = 200;
-            $this->statusMessage = 'OK';
+            $this->setOkStatus();
         }
     }
 
@@ -217,8 +216,7 @@ class WatchListController extends Controller
     public function ifNidAndUuidExistToRemove($ifNidAndUuidExist, $nid, string $uuid): void
     {
         if ($ifNidAndUuidExist) {
-            $this->statusCode = 200;
-            $this->statusMessage = 'OK';
+            $this->setOkStatus();
             $this->message = __('dict.deleted');
             $this->removeFromWatchList($nid, $uuid);
         }
@@ -293,6 +291,15 @@ class WatchListController extends Controller
     {
         $this->setStatusCode(404);
         $this->setStatusMessage('Not Found');
+    }
+
+    /**
+     * set Ok Status.
+     */
+    protected function setOkStatus(): void
+    {
+        $this->setStatusCode(200);
+        $this->setStatusMessage('OK');
     }
 
 

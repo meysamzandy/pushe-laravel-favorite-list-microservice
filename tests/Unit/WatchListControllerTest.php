@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\WatchListController;
+use App\Http\Helper\Queries;
 use App\Http\Helper\WatchList;
 use App\Http\Helper\WatchListValidators;
 use Illuminate\Support\Facades\Artisan;
@@ -24,11 +25,11 @@ class WatchListControllerTest extends TestCase
     {
 
         ///has no record
-        $testOne = WatchListController::fetchWatchListQuery('2a13af7a-15c2-31b1-abac-54fd64e8b0e4');
+        $testOne = Queries::fetchWatchListQuery('2a13af7a-15c2-31b1-abac-54fd64e8b0e4');
         $this->assertEmpty($testOne);
 
         ///has a record
-        $testTwo = WatchListController::fetchWatchListQuery($this->fetchData->uuid);
+        $testTwo = Queries::fetchWatchListQuery($this->fetchData->uuid);
         $this->assertNotEmpty($testTwo);
         $this->assertJson($testTwo);
         $firstRecord = $testTwo->first()->nid;

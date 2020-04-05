@@ -20,15 +20,13 @@ class WatchListController extends Controller
         $message = NULL,
         $statusCode = 400,
         $statusMessage = 'Bad Request';
-
     /**
      * @param null $secret
      * @return JsonResponse
      */
     public function getList($secret = null): JsonResponse
     {
-        $this->statusCode = 403;
-        $this->statusMessage = 'Forbidden';
+        $this->setForbiddenStatus();
 
         $secretValidator = WatchListValidators::secretValidator($secret);
 
@@ -45,8 +43,7 @@ class WatchListController extends Controller
     public function ifSecretIsValid($secret, bool $secretValidator): void
     {
         if ($secretValidator) {
-            $this->statusCode = 403;
-            $this->statusMessage = 'Forbidden';
+            $this->setForbiddenStatus();
 
             $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
             $this->ifUuidIsValid( $secretValidator, $uuid);
@@ -117,8 +114,7 @@ class WatchListController extends Controller
     {
         if ($Validator) {
 
-            $this->statusCode = 403;
-            $this->statusMessage = 'Forbidden';
+            $this->setForbiddenStatus();
             $this->message = __('dict.notLogging');
 
             $secret = $request->input('u');
@@ -151,8 +147,7 @@ class WatchListController extends Controller
     public function ifUserIsLoggedInToAdd(string $uuid, $ifNidAndUuidExist, $nid): void
     {
         if (WatchListValidators::uuidValidator($uuid) && $uuid !== env('ANONYMOUS')) {
-            $this->statusCode = 403;
-            $this->statusMessage = 'Forbidden';
+            $this->setForbiddenStatus();
             $this->message = __('dict.nidAndUuidExist');
             $this->ifNidAndUuidExistToAdd($ifNidAndUuidExist, $uuid, $nid);
         }
@@ -166,8 +161,7 @@ class WatchListController extends Controller
     public function ifNidAndUuidExistToAdd($ifNidAndUuidExist, string $uuid, $nid): void
     {
         if (!$ifNidAndUuidExist) {
-            $this->statusCode = 403;
-            $this->statusMessage = 'Forbidden';
+            $this->setForbiddenStatus();
             $this->message = __('dict.toManyRequest');
             $watchList = self::fetchWatchListQuery($uuid);
             $this->addToWatchlistQuery($watchList, $nid, $uuid);
@@ -254,8 +248,7 @@ class WatchListController extends Controller
     {
         if ($Validator) {
 
-            $this->statusCode = 403;
-            $this->statusMessage = 'Forbidden';
+            $this->setForbiddenStatus();
             $this->message = __('dict.notLogging');
 
             $secret = $request->input('u');
@@ -268,6 +261,31 @@ class WatchListController extends Controller
             $this->ifUserIsLoggedInToRemove($uuid, $ifNidAndUuidExist, $nid);
 
         }
+    }
+
+    /**
+     * @param string $statusMessage
+     */
+    public function setStatusMessage(string $statusMessage): void
+    {
+        $this->statusMessage = $statusMessage;
+    }
+
+    /**
+     * @param int $statusCode
+     */
+    public function setStatusCode(int $statusCode): void
+    {
+        $this->statusCode = $statusCode;
+    }
+
+    /**
+     * set Forbidden Status
+     */
+    protected function setForbiddenStatus(): void
+    {
+        $this->setStatusCode(403);
+        $this->setStatusMessage('Forbidden');
     }
 
 

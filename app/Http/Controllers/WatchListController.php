@@ -174,8 +174,7 @@ class WatchListController extends Controller
     public function addToWatchlistQuery($watchList, $nid, string $uuid): void
     {
         if (count($watchList) < 30) {
-            $this->statusCode = 201;
-            $this->statusMessage = 'Created';
+            $this->setCreatedStatus();
             $this->message = __('dict.created');
             $reActions = new \App\WatchList();
             $reActions->nid = $nid;
@@ -300,6 +299,15 @@ class WatchListController extends Controller
     {
         $this->setStatusCode(200);
         $this->setStatusMessage('OK');
+    }
+
+    /**
+     * set Created Status.
+     */
+    protected function setCreatedStatus(): void
+    {
+        $this->setStatusCode(201);
+        $this->setStatusMessage('Created');
     }
 
 

@@ -172,6 +172,13 @@ class WatchListControllerTest extends TestCase
 
     public function testRemoveWatch(): void
     {
+        $data = [
+            'n' => 222222,
+            'u' => 'Zy9rSUZITUJ5MW91MUVBeGI3SWZIK3NlRVB4dm56ZUZSNUFHb2FDalpRcUJ0c2Fo'
+        ];
+        $url = self::WATCH . '/add';
+        $this->post($url, $data, ['Content-Type', 'application/json']);
+
         // check if no data
         $data = [
         ];
@@ -189,7 +196,7 @@ class WatchListControllerTest extends TestCase
         $response = $this->delete($url, $data, ['Content-Type', 'application/json']);
         $response->assertStatus(405);
 
-        $this->assertDatabaseMissing('watch_lists', [
+        $this->assertDatabaseHas('watch_lists', [
             'nid' => 222222
         ]);
 
@@ -201,23 +208,23 @@ class WatchListControllerTest extends TestCase
         $url = self::WATCH . '/remove';
         $response = $this->delete($url, $data, ['Content-Type', 'application/json']);
         $response->assertStatus(400);
-
-        $this->assertDatabaseMissing('watch_lists', [
-            'nid' => '0e0'
+        $this->assertDatabaseHas('watch_lists', [
+            'uuid' => '2d3c9de4-3831-4988-8afb-710fda2e740c'
         ]);
+
         $this->assertJsonStringEqualsJsonString('{"body":null,"message":null}', $response->getContent());
 
         // check if no uuid
         $data = [
-            'n' => 111111,
+            'n' => 222222,
             'u' => ''
         ];
         $url = self::WATCH . '/remove';
         $response = $this->delete($url, $data, ['Content-Type', 'application/json']);
         $response->assertStatus(400);
 
-        $this->assertDatabaseMissing('watch_lists', [
-            'nid' => 111111
+        $this->assertDatabaseHas('watch_lists', [
+            'nid' => 222222
         ]);
         $this->assertJsonStringEqualsJsonString('{"body":null,"message":null}', $response->getContent());
 
@@ -226,15 +233,15 @@ class WatchListControllerTest extends TestCase
 
         //if user is anonymous
         $data = [
-            'n' => 111111,
+            'n' => 222222,
             'u' => 'MTYwUFQzbFNtMTZFQnpQL2RyZkpOeHNNTVZKYzZoaisrNVVIdmFuclRZcEJDKzNC'
         ];
         $url = self::WATCH . '/remove';
         $response = $this->delete($url, $data, ['Content-Type', 'application/json']);
         $response->assertStatus(403);
 
-        $this->assertDatabaseMissing('watch_lists', [
-            'nid' => 111111,
+        $this->assertDatabaseHas('watch_lists', [
+            'nid' => 222222,
         ]);
         $this->assertJsonStringEqualsJsonString('{"body":null,"message":"برای افزودن و حذف از لیست تماشا، بایستی وارد شوید."}', $response->getContent());
 

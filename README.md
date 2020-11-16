@@ -1,5 +1,5 @@
 ## Installation Tips
-pooshe is a base panel for all microservices for filmgardi.com
+pooshe is a favorite list for filmgardi.com
 
 ### Requirements installation
 

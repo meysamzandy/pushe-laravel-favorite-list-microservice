@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6558f74828bca9ebecac73d90cea4b1a",
+    "content-hash": "0540f709689502b7f78f7e25144feef7",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1428,6 +1428,55 @@
                 "php"
             ],
             "time": "2020-08-18T19:48:01+00:00"
+        },
+        {
+            "name": "nowakowskir/php-jwt",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nowakowskir/php-jwt.git",
+                "reference": "b2162f17f5a4c71f898326cf374a16aa3de41ecd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nowakowskir/php-jwt/zipball/b2162f17f5a4c71f898326cf374a16aa3de41ecd",
+                "reference": "b2162f17f5a4c71f898326cf374a16aa3de41ecd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nowakowskir\\JWT\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Radosław Nowakowski",
+                    "email": "nowakowski.r@gmail.com"
+                }
+            ],
+            "description": "JSON Web Token implementation for PHP.",
+            "homepage": "https://github.com/nowakowskir/php-jwt",
+            "keywords": [
+                "json",
+                "jwt",
+                "token"
+            ],
+            "support": {
+                "issues": "https://github.com/nowakowskir/php-jwt/issues",
+                "source": "https://github.com/nowakowskir/php-jwt/tree/2.0.0"
+            },
+            "time": "2020-10-27T21:49:45+00:00"
         },
         {
             "name": "opis/closure",
@@ -6566,5 +6615,5 @@
         "php": "^7.2.5"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

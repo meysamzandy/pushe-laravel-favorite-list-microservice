@@ -16,7 +16,7 @@ class WatchListValidators
     public static function nidUuidValidator(request $request): bool
     {
         $validator = Validator::make($request->all(),
-            ['n' => 'required|numeric|min:1', 'u' => 'required|min:64']
+            ['n' => 'required|numeric|min:1']
         );
         return !$validator->fails();
     }

@@ -7,6 +7,7 @@ use App\Http\Helper\WatchList;
 use App\Http\Helper\WatchListValidators;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Nowakowskir\JWT\Base64Url;
 
 class WatchListController extends Controller
 {
@@ -19,16 +20,15 @@ class WatchListController extends Controller
         $statusMessage = 'Bad Request';
 
     /**
-     * @param null $secret
+     * @param Request $request
      * @return JsonResponse
      */
-    public function getList($secret = null): JsonResponse
+    public function getList(Request $request): JsonResponse
     {
         $this->setForbiddenStatus();
 
-        $secretValidator = WatchListValidators::secretValidator($secret);
 
-        $this->ifSecretIsValid($secret, $secretValidator);
+        $this->ifSecretIsValid($request);
 
         return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
 
@@ -59,29 +59,33 @@ class WatchListController extends Controller
         $this->statusMessage = $statusMessage;
     }
 
-    /**
-     * @param $secret
-     * @param bool $secretValidator
-     */
-    public function ifSecretIsValid($secret, bool $secretValidator): void
+
+    public function ifSecretIsValid(Request $request): void
     {
-        if ($secretValidator) {
+        $uuid = null ;
+        $tokenData = $this->getPayloadFromJwt($request->bearerToken());
+
+        if ($tokenData) {
             $this->setForbiddenStatus();
 
-            $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
-            $this->ifUuidIsValid($secretValidator, $uuid);
+            if (isset($tokenData['auid'])) {
+                $uuid = $tokenData['auid'];
+            }
+            if (isset($tokenData['body']['auid'])) {
+                $uuid = $tokenData['body']['auid'];
+            }
+            $this->ifUuidIsValid($uuid);
 
 
         }
     }
 
     /**
-     * @param bool $secretValidator
      * @param string $uuid
      */
-    public function ifUuidIsValid(bool $secretValidator, string $uuid): void
+    public function ifUuidIsValid(string $uuid): void
     {
-        if ($secretValidator && WatchListValidators::uuidValidator($uuid)) {
+        if (WatchListValidators::uuidValidator($uuid)) {
             $this->setNotFoundStatus();
 
             $watchList = Queries::fetchWatchListQuery($uuid);
@@ -143,15 +147,21 @@ class WatchListController extends Controller
      */
     public function ifValidateToAdd(request $request, bool $Validator): void
     {
-        if ($Validator) {
+        $uuid = null;
+        $tokenData = $this->getPayloadFromJwt($request->bearerToken());
+        if ($Validator && $tokenData) {
 
             $this->setForbiddenStatus();
             $this->setMessage(__('dict.notLogging'));
 
-            $secret = $request->input('u');
-            $nid = $request->input('n');
+            if (isset($tokenData['auid'])) {
+                $uuid = $tokenData['auid'];
+            }
+            if (isset($tokenData['body']['auid'])) {
+                $uuid = $tokenData['body']['auid'];
+            }
 
-            $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
+            $nid = $request->input('n');
 
             $ifNidAndUuidExist = Queries::getObj($nid, $uuid);
 
@@ -243,15 +253,21 @@ class WatchListController extends Controller
      */
     public function ifValidateToRemove(request $request, bool $Validator): void
     {
-        if ($Validator) {
+        $uuid = null;
+        $tokenData = $this->getPayloadFromJwt($request->bearerToken());
+        if ($Validator && $tokenData) {
 
             $this->setForbiddenStatus();
             $this->setMessage(__('dict.notLogging'));
 
-            $secret = $request->input('u');
-            $nid = $request->input('n');
+            if (isset($tokenData['auid'])) {
+                $uuid = $tokenData['auid'];
+            }
+            if (isset($tokenData['body']['auid'])) {
+                $uuid = $tokenData['body']['auid'];
+            }
 
-            $uuid = WatchList::decrypt($secret, env(self::DECRYPT_KEY), env(self::DECRYPT_IV));
+            $nid = $request->input('n');
 
             $ifNidAndUuidExist = Queries::getObj($nid, $uuid);
 
@@ -288,5 +304,14 @@ class WatchListController extends Controller
         }
     }
 
+    public function getPayloadFromJwt($token)
+    {
+        if (!$token) {
+            return null ;
+        }
+        $token = str_replace('Bearer ', '', $token);
+        list($header, $payload, $signature) = explode('.', $token);
+        return json_decode(Base64Url::decode($payload), true);
+    }
 
 }

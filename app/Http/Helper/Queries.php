@@ -49,7 +49,7 @@ class Queries
     {
             try {
                 $replica = DB::connection('replica');
-                return $replica->select('SELECT * FROM movie  WHERE movie.nid = :nid ;', ['nid' => $nid])[0];
+                return $replica->select('SELECT * FROM movie  WHERE id = :nid ;', ['nid' => $nid])[0];
 
             } catch (\Exception $e) {
                 return null;

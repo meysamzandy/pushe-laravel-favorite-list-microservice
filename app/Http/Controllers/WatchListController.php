@@ -142,16 +142,16 @@ class WatchListController extends Controller
                    $data['uri'] = str_replace('public://', '/sites/default/files/', $value);
                }
                if ($item === 'serial_type') {
-                   $data['serial_type'] = $value;
+                   $data['serial_type'] = (int) $value;
                }
                if ($item === 'field_serial_part_numbers_value') {
-                   $data['serial_part_number'] = $value;
+                   $data['serial_part_number'] = (int) $value;
                }
                if ($item === 'field_serial_season_number_value') {
-                   $data['serial_season_number'] = $value;
+                   $data['serial_season_number'] = (int) $value;
                }
                if ($item === 'mother') {
-                   $data['mother'] = $value;
+                   $data['mother'] = (int) $value;
                }
            }
        }

@@ -112,11 +112,52 @@ class WatchListController extends Controller
         if (count($watchList) !== 0) {
             $data = null;
             foreach ($watchList as $value) {
-                $data [] = Queries::getMovieDataByNid($value->nid);
+                $obj = $this->prepareData($value->nid);
+                if (!$obj) {
+                    continue;
+                }
+                $data [] = $obj;
             }
             $this->body['list'] = $data;
             $this->setOkStatus();
         }
+    }
+
+    public function prepareData(int $nid): array
+    {
+        $data = [];
+       $dataQueries = Queries::getMovieDataByNid($nid);
+       if ($dataQueries) {
+           foreach ($dataQueries as $item => $value) {
+               if ($item === 'id') {
+                   $data['nid'] = (int) $value;
+               }
+               if ($item === 'alias') {
+                   $data['alias'] = $value;
+               }
+               if ($item === 'title') {
+                   $data['title'] = $value;
+               }
+               if ($item === 'uri') {
+                   $data['uri'] = str_replace('public://', '/sites/default/files/', $value);
+               }
+               if ($item === 'serial_type') {
+                   $data['serial_type'] = $value;
+               }
+               if ($item === 'field_serial_part_numbers_value') {
+                   $data['serial_part_number'] = $value;
+               }
+               if ($item === 'field_serial_season_number_value') {
+                   $data['serial_season_number'] = $value;
+               }
+               if ($item === 'mother') {
+                   $data['mother'] = $value;
+               }
+           }
+       }
+
+
+        return $data;
     }
 
     /**

@@ -112,7 +112,7 @@ class WatchListController extends Controller
         if (count($watchList) !== 0) {
             $data = null;
             foreach ($watchList as $value) {
-                $data [] = $value->nid;
+                $data [] = Queries::getMovieDataByNid($value->nid);
             }
             $this->body['list'] = $data;
             $this->setOkStatus();

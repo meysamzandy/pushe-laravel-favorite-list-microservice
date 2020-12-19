@@ -7,6 +7,7 @@ namespace App\Http\Helper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Mixed_;
 
 class Queries
@@ -38,5 +39,21 @@ class Queries
     public static function getObj($nid, string $uuid)
     {
         return \App\WatchList::query()->where('nid', $nid)->where('uuid', $uuid)->first();
+    }
+
+    /**
+     * @param int $nid
+     * @return mixed|null
+     */
+    public static function getMovieDataByNid(int $nid)
+    {
+            try {
+                $replica = DB::connection('replica');
+                return $replica->select('SELECT * FROM movie  WHERE movie.nid = :nid ;', ['nid' => $nid])[0];
+
+            } catch (\Exception $e) {
+                return null;
+            }
+
     }
 }

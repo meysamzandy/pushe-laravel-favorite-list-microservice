@@ -60,7 +60,7 @@ class WatchListController extends Controller
     }
 
 
-    public function ifSecretIsValid(Request $request): void
+    public function ifSecretIsValid(Request $request,$nid = null): void
     {
         $uuid = null ;
         $tokenData = $this->getPayloadFromJwt($request->bearerToken());
@@ -74,7 +74,7 @@ class WatchListController extends Controller
             if (isset($tokenData['body']['auid'])) {
                 $uuid = $tokenData['body']['auid'];
             }
-            $this->ifUuidIsValid($uuid);
+            $this->ifUuidIsValid($uuid,$nid);
 
 
         }
@@ -82,15 +82,20 @@ class WatchListController extends Controller
 
     /**
      * @param string $uuid
+     * @param null $nid
      */
-    public function ifUuidIsValid(string $uuid): void
+    public function ifUuidIsValid(string $uuid,$nid = null): void
     {
         if (WatchListValidators::uuidValidator($uuid)) {
             $this->setNotFoundStatus();
 
             $watchList = Queries::fetchWatchListQuery($uuid);
 
-            $this->ifWatchListHasItem($watchList);
+            if (!$nid) {
+                $this->ifWatchListHasItem($watchList);
+            }else{
+                $this->isFavorite($uuid,$nid);
+            }
 
         }
     }
@@ -102,6 +107,17 @@ class WatchListController extends Controller
     {
         $this->setStatusCode(404);
         $this->setStatusMessage('Not Found');
+    }
+
+    /**
+     * @param $nid
+     */
+    public function isFavorite($uuid,$nid): void
+    {
+        $isFavorite = \App\WatchList::query()->where(['uuid'=>$uuid ,'nid' => $nid])->exists();
+            $this->body['isFavorite'] = $isFavorite;
+            $this->setOkStatus();
+
     }
 
     /**
@@ -353,6 +369,17 @@ class WatchListController extends Controller
         $token = str_replace('Bearer ', '', $token);
         list($header, $payload, $signature) = explode('.', $token);
         return json_decode(Base64Url::decode($payload), true);
+    }
+
+    public function check($nid,Request $request)
+    {
+
+        $this->setForbiddenStatus();
+
+        $this->ifSecretIsValid($request,(int) $nid);
+
+        return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
+
     }
 
 }

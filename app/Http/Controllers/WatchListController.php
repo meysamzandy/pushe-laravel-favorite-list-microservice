@@ -147,28 +147,37 @@ class WatchListController extends Controller
            foreach ($dataQueries as $item => $value) {
                if ($item === 'id') {
                    $data['nid'] = (int) $value;
+                   continue;
                }
                if ($item === 'alias') {
                    $data['alias'] = $value;
+                   continue;
                }
                if ($item === 'title') {
                    $data['title'] = $value;
+                   continue;
                }
                if ($item === 'uri') {
                    $data['uri'] = str_replace('public://', '/sites/default/files/', $value);
+                   continue;
                }
                if ($item === 'serial_type') {
                    $data['serial_type'] = $value ? (int) $value : null ;
+                   continue;
                }
                if ($item === 'field_serial_part_numbers_value') {
                    $data['serial_part_number'] = $value ? (int) $value : null;
+                   continue;
                }
                if ($item === 'field_serial_season_number_value') {
                    $data['serial_season_number'] = $value ? (int) $value : null;
+                   continue;
                }
                if ($item === 'mother') {
                    $data['mother'] = $value ? (int) $value : null;
+                   continue;
                }
+               $data[$item] = $value ? (int) $value : null;
            }
        }
 

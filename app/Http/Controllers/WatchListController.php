@@ -110,6 +110,7 @@ class WatchListController extends Controller
     }
 
     /**
+     * @param $uuid
      * @param $nid
      */
     public function isFavorite($uuid,$nid): void
@@ -196,26 +197,26 @@ class WatchListController extends Controller
 
     /**
      * @param Request $request
+     * @param int $nid
      * @return JsonResponse
      */
-    public function addWatch(request $request): JsonResponse
+    public function addWatch(request $request, int $nid): JsonResponse
     {
-        $Validator = WatchListValidators::nidUuidValidator($request);
 
-        $this->ifValidateToAdd($request, $Validator);
+        $this->ifValidateToAdd($request, $nid);
 
         return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
     }
 
     /**
      * @param Request $request
-     * @param bool $Validator
+     * @param int $nid
      */
-    public function ifValidateToAdd(request $request, bool $Validator): void
+    public function ifValidateToAdd(request $request, int $nid): void
     {
         $uuid = null;
         $tokenData = $this->getPayloadFromJwt($request->bearerToken());
-        if ($Validator && $tokenData) {
+        if ($nid && $tokenData) {
 
             $this->setForbiddenStatus();
             $this->setMessage(__('dict.notLogging'));
@@ -226,8 +227,6 @@ class WatchListController extends Controller
             if (isset($tokenData['body']['auid'])) {
                 $uuid = $tokenData['body']['auid'];
             }
-
-            $nid = $request->input('n');
 
             $ifNidAndUuidExist = Queries::getObj($nid, $uuid);
 
@@ -302,26 +301,25 @@ class WatchListController extends Controller
 
     /**
      * @param Request $request
+     * @param int $nid
      * @return JsonResponse
      */
-    public function removeWatch(request $request): JsonResponse
+    public function removeWatch(request $request, int $nid): JsonResponse
     {
-        $Validator = WatchListValidators::nidUuidValidator($request);
-
-        $this->ifValidateToRemove($request, $Validator);
+        $this->ifValidateToRemove($request, $nid);
 
         return WatchList::returnDataInJson($this->body, $this->message, $this->statusCode, $this->statusMessage);
     }
 
     /**
      * @param Request $request
-     * @param bool $Validator
+     * @param int $nid
      */
-    public function ifValidateToRemove(request $request, bool $Validator): void
+    public function ifValidateToRemove(request $request, int $nid): void
     {
         $uuid = null;
         $tokenData = $this->getPayloadFromJwt($request->bearerToken());
-        if ($Validator && $tokenData) {
+        if ($nid && $tokenData) {
 
             $this->setForbiddenStatus();
             $this->setMessage(__('dict.notLogging'));
@@ -332,8 +330,6 @@ class WatchListController extends Controller
             if (isset($tokenData['body']['auid'])) {
                 $uuid = $tokenData['body']['auid'];
             }
-
-            $nid = $request->input('n');
 
             $ifNidAndUuidExist = Queries::getObj($nid, $uuid);
 

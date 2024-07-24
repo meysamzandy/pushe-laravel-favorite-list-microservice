@@ -11,7 +11,7 @@ Install the composer v2<br>
 Enable the event on mariadb<br>
 
 ### Requirements Command
-run `git clone https://github.com/meysamzandy/laravel-favorite-list-microservice.git` <br>
+run `git clone https://github.com/meysamzandy/pushe-laravel-favorite-list-microservice.git` <br>
 run `cd /var/www/pooshe` <br>
 run `composer install` <br>
 Duplicate .env.example to .env <br>

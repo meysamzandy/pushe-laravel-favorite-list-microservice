@@ -1,5 +1,5 @@
 ## Installation Tips
-pushe is a favorite list for filmgardi.com
+pushe is a favorite list microservice
 
 ### Requirements installation
 
